@@ -3,6 +3,7 @@ package com.a99ti.books.controller;
 import com.a99ti.books.entities.Book;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -28,9 +29,14 @@ public class BookController {
     }
 
     @GetMapping("/api/books")
-    public List<Book> getBooks(){
-        return books;
+    public List<Book> getBooks(@RequestParam(required = false) String category){
+        if (category == null){
+            return books;
+        }
+
+        return books.stream().filter(book -> book.getCategory().equalsIgnoreCase(category)).toList();
     }
+
 
     @GetMapping("/api/books/{title}")
     public Book getBookByTitle(@PathVariable String title) {
@@ -39,6 +45,5 @@ public class BookController {
                 .findFirst()
                 .orElse(null);
     }
-
 
 }
