@@ -1,0 +1,70 @@
+package com.a99ti.books.controller;
+
+import com.a99ti.books.entities.Book;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/books")
+public class BookController {
+
+    private final List<Book> books = new ArrayList<>();
+
+    public BookController (){
+        initialiseBooks();
+    }
+
+    private void initialiseBooks() {
+        books.addAll(List.of(
+                new Book("The Pragmatic Programmer", "Andrew Hunt & David Thomas", "Software Development"),
+                new Book("Clean Code", "Robert C. Martin", "Programming"),
+                new Book("Effective Java", "Joshua Bloch", "Java"),
+                new Book("Design Patterns", "Erich Gamma et al.", "Software Engineering"),
+                new Book("Introduction to Algorithms", "Thomas H. Cormen", "Computer Science")
+        ));
+    }
+
+    @GetMapping
+    public List<Book> getBooks(@RequestParam(required = false) String category){
+        if (category == null){
+            return books;
+        }
+
+        return books.stream().filter(book -> book.getCategory().equalsIgnoreCase(category)).toList();
+    }
+
+    @GetMapping("/{title}")
+    public Book getBookByTitle(@PathVariable String title) {
+        return books.stream()
+                .filter(book -> book.getTitle().equalsIgnoreCase(title))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @PostMapping
+    public void createBook(@RequestBody Book newBook){
+        boolean isNewBook = books.stream().noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
+
+        if (isNewBook) {
+            books.add(newBook);
+        }
+    }
+
+    @PutMapping("/{title}")
+    public void getBookByTitle(@PathVariable String title, @RequestBody Book updatedBook) {
+        for (int i = 0; i < books.size(); i++){
+            if (books.get(i).getTitle().equalsIgnoreCase(title)){
+                books.set(i, updatedBook);
+                return;
+            }
+        }
+    }
+
+    @DeleteMapping("/{title}")
+    public void deleteBook(@PathVariable String title){
+        books.removeIf(book -> book.getTitle().equalsIgnoreCase(title));
+    }
+
+}
