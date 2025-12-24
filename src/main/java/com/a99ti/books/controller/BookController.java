@@ -26,7 +26,7 @@ public class BookController {
         ));
     }
 
-    @GetMapping("/api/v1/books")
+    @GetMapping("/api/books")
     public List<Book> getBooks(){
         return books;
     }
