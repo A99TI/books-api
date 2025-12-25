@@ -4,6 +4,7 @@ import com.a99ti.books.entities.Book;
 import com.a99ti.books.request.BookRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class BookController {
         ));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<Book> getBooks(@RequestParam(required = false) String category){
         if (category == null){
@@ -43,6 +45,7 @@ public class BookController {
         return books.stream().filter(book -> book.getCategory().equalsIgnoreCase(category)).toList();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     public Book getBookById(@PathVariable @Min(value = 1) long id) {
         return books.stream()
@@ -51,6 +54,7 @@ public class BookController {
                 .orElse(null);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public void createBook(@Valid @RequestBody BookRequest bookRequest){
         long id = books.isEmpty() ? 1 : books.getLast().getId() + 1;
@@ -61,6 +65,7 @@ public class BookController {
 
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
     public void updateBook(@PathVariable @Min(value = 1) long id, @Valid @RequestBody BookRequest bookRequest) {
         for (int i = 0; i < books.size(); i++){
@@ -72,6 +77,7 @@ public class BookController {
         }
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable @Min(value = 1)long id){
         books.removeIf(book -> book.getId() == id);
