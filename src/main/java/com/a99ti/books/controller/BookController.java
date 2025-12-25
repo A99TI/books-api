@@ -1,6 +1,7 @@
 package com.a99ti.books.controller;
 
 import com.a99ti.books.entities.Book;
+import com.a99ti.books.request.BookRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -49,12 +50,13 @@ public class BookController {
     }
 
     @PostMapping
-    public void createBook(@RequestBody Book newBook){
-        boolean isNewBook = books.stream().noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
+    public void createBook(@RequestBody BookRequest bookRequest){
+        long id = books.isEmpty() ? 1 : books.getLast().getId() + 1;
 
-        if (isNewBook) {
-            books.add(newBook);
-        }
+        Book book = convertToBook(id, bookRequest);
+
+        books.add(book);
+
     }
 
     @PutMapping("/{id}")
@@ -70,6 +72,16 @@ public class BookController {
     @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable long id){
         books.removeIf(book -> book.getId() == id);
+    }
+
+    private Book convertToBook (long id, BookRequest bookRequest) {
+        return new Book(
+                id,
+                bookRequest.getTitle(),
+                bookRequest.getAuthor(),
+                bookRequest.getCategory(),
+                bookRequest.getRating()
+        );
     }
 
 }
